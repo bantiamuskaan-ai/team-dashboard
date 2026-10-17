@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Team Performance</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--tx:#1b1f27;--mu:#6b7280;--bd:#e3e6eb;--ac:#2f5fd0;--ok:#1f8f5f;--wa:#c98a0a;--er:#cf3b3b;--ok-bg:#e3f4ec;--wa-bg:#fbf0d9;--er-bg:#fbe4e4;--ac-bg:#e6edfb;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12151b;--card:#1a1e26;--tx:#e8eaee;--mu:#98a0ae;--bd:#2a303b;--ac:#7ea3ff;--ok:#4cc790;--wa:#e6b23f;--er:#f27a7a;--ok-bg:#16332a;--wa-bg:#3a2f12;--er-bg:#3b1c1c;--ac-bg:#1e2a47;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#12151b;--card:#1a1e26;--tx:#e8eaee;--mu:#98a0ae;--bd:#2a303b;--ac:#7ea3ff;--ok:#4cc790;--wa:#e6b23f;--er:#f27a7a;--ok-bg:#16332a;--wa-bg:#3a2f12;--er-bg:#3b1c1c;--ac-bg:#1e2a47;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:20px 16px 40px}
+header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:16px}
+h1{font-size:20px;margin:0}h2{font-size:15px;margin:0 0 10px}
+.sub{color:var(--mu);font-size:13px}
+.ctrl{display:flex;flex-wrap:wrap;gap:8px}
+select,input,button{font:inherit;color:var(--tx);background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:7px 10px}
+button{cursor:pointer}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:16px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px}
+.kpi .v{font-size:26px;font-weight:650;margin-top:2px}.kpi .l{color:var(--mu);font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+.grid{display:block}
+@media(max-width:860px){.grid{grid-template-columns:1fr}}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:520px}
+th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--bd);white-space:nowrap}
+th{color:var(--mu);font-weight:500;font-size:12px;cursor:pointer;user-select:none}
+tbody tr{cursor:pointer}tbody tr:hover,tr.sel{background:var(--ac-bg)}
+.name{font-weight:600}.role{color:var(--mu);font-size:12px}
+.bar{height:8px;background:var(--bd);border-radius:4px;overflow:hidden;min-width:90px;position:relative}
+.bar i{display:block;height:100%;border-radius:4px}
+.chip{display:inline-block;padding:2px 9px;border-radius:99px;font-size:12px;font-weight:550}
+.under{background:var(--ac-bg);color:var(--ac)}.bal{background:var(--ok-bg);color:var(--ok)}.over{background:var(--er-bg);color:var(--er)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+.stats div{background:var(--bg);border-radius:8px;padding:8px}.stats b{display:block;font-size:18px}.stats span{color:var(--mu);font-size:12px}
+.legend{display:flex;gap:14px;font-size:12px;color:var(--mu);margin:4px 0 8px}.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px}
+ul{list-style:none;padding:0;margin:0}li.t{display:flex;justify-content:space-between;gap:8px;padding:7px 0;border-bottom:1px solid var(--bd)}li.t:last-child{border:0}
+.empty{color:var(--mu);padding:20px;text-align:center}
+.tabs{display:flex;flex-wrap:wrap;gap:6px}.tab.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+.slots{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}.slot{border:1px solid var(--bd);border-radius:10px;padding:12px;min-width:0}
+.slot h3{margin:0 0 6px;font-size:14px}.btn{display:inline-block;border:1px solid var(--bd);border-radius:8px;padding:6px 10px;cursor:pointer;background:var(--card);margin:8px 6px 0 0;font-size:13px}
+table.sm{min-width:0;font-size:12px}.sm th{cursor:default;color:var(--tx);font-weight:600}.sm td,.sm th{padding:4px 8px}
+.gt{min-width:1250px}.gt td,.gt th{white-space:normal;vertical-align:top;padding:6px}.gt input,.gt textarea{width:100%;font-size:12px;padding:5px}.gt textarea{font:inherit;font-size:12px;min-width:170px;resize:vertical;color:var(--tx);background:var(--card);border:1px solid var(--bd);border-radius:8px}.gt .n{width:70px}.gt .pts{white-space:nowrap}
+input:disabled,textarea:disabled{opacity:.7;cursor:not-allowed}
+.emp{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px}.emp>div{background:var(--bg);border-radius:8px;padding:8px}.emp span{display:block;color:var(--mu);font-size:12px}.gh{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;align-items:center;margin-bottom:10px}.actions{margin:10px 0}
+body.pv .lv{display:none}body:not(.pv) .pvw{display:none}
+#crumbs{font-size:14px;color:var(--mu)}#crumbs a{color:var(--ac);cursor:pointer}#crumbs a:hover{text-decoration:underline}#crumbs b{color:var(--tx)}
+.res{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:14px 0}.big b{display:block;font-size:30px;line-height:1.25}
+.chip.na{background:var(--bd);color:var(--mu)}
+#login{position:fixed;inset:0;z-index:100;background:var(--bg);display:none;align-items:center;justify-content:center;padding:20px}
+body.locked #login{display:flex}body.locked .wrap{display:none}body.locked #logout{display:none}body.member [data-mode]{display:none}.wrap:has(#compounds:empty){display:none}
+#login .box{width:100%;max-width:340px;background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:22px}#login input{width:100%;margin:6px 0 12px}#login button{width:100%;background:var(--ac);color:#fff;border-color:var(--ac)}#lerr{color:var(--er);font-size:13px;min-height:18px;margin-bottom:8px}
+.lt{min-width:700px}.lt td{white-space:nowrap}.lt input[type=date],.lt select{width:auto;font-size:12px;padding:5px}
+.tt{min-width:0;width:100%}.tt th,.tt td{padding:3px;border-bottom:0}.tt input{width:100%;min-width:130px;font-size:12px;padding:5px}.tt .th{display:flex;gap:4px}.tt .th input{font-weight:600}
+.tk{display:grid;grid-template-columns:1fr 70px 140px 110px 34px;gap:6px;margin-bottom:6px;align-items:center}.tk input,.tk select{width:100%;min-width:0;font-size:12px;padding:5px}
+@media(max-width:560px){.tk{grid-template-columns:1fr 60px 1fr 34px}.tk>:first-child{grid-column:1/-1}.tk select{grid-column:span 2}}
+</style></head>
+<body class="locked"><div id="login"><div class="box"><h1 style="margin-bottom:4px">Team Performance</h1><div class="sub" style="margin-bottom:14px">Prototype · please sign in</div><label class="sub" for="lu">Username</label><input id="lu" autocomplete="username"><label class="sub" for="lp">Password</label><input id="lp" type="password" autocomplete="current-password"><div id="lerr"></div><button id="lgo">Sign in</button></div></div>
+<button id="logout" style="position:fixed;bottom:calc(env(safe-area-inset-bottom,0px) + 10px);right:10px;z-index:50;font-size:12px;padding:5px 10px">Log out</button>
+<div class="wrap">
+<header class="lv">
+ <div><h1>Team Performance</h1><div class="sub">Sample data · replace with your HR / project-tool feed</div></div>
+ <div class="ctrl">
+  <input id="q" placeholder="Search name…" aria-label="Search">
+  <select id="role" aria-label="Role"><option value="">All roles</option></select>
+  <select id="proj" aria-label="Project"><option value="">All projects</option></select>
+  
+ </div>
+</header>
+<section class="kpis lv" id="kpis"></section>
+<div class="card lv" id="actions" style="margin-bottom:16px"></div>
+<div class="grid lv">
+ <div class="card"><h2>Team members <span class="sub" id="tmhint">· click a person to open their page</span></h2>
+  <div class="scroll"><table><thead><tr>
+   <th data-k="name">Name</th><th data-k="perf">Performance</th><th data-k="ontime">On-time</th>
+  </tr></thead><tbody id="rows"></tbody></table></div>
+  <div class="empty" id="none" hidden>No matching people.</div>
+ </div>
+ 
+</div>
+</div>
+<div class="wrap pvw" style="padding-bottom:0"><nav id="crumbs"></nav></div>
+<div class="wrap pvw" style="padding-top:0;padding-bottom:0"><div class="card" id="goals"></div></div>
+<div class="wrap pvw" style="padding-top:16px;padding-bottom:0"><div class="card" id="leave"></div></div>
+<div class="wrap pvw" style="padding-top:16px"><div class="card" id="detail"></div></div>
+<datalist id="cats"><option>Project deliverable</option><option>Project related work</option><option>Operations and Lab maintenance</option><option>Developmental goal</option><option>Extra</option></datalist>
+<div class="wrap lv" style="padding-top:0;padding-bottom:0"><div class="card" id="annual"></div></div>
+<div class="wrap lv" style="padding-top:16px;padding-bottom:0"><div class="card" id="compounds"></div></div>
+<div class="wrap lv" style="padding-top:16px"><div class="card" id="projects"></div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+/* Standalone hosting shim: stores data in this browser (localStorage) instead of Claude's shared storage. */
+(function(){const P='tw:',L={};
+ const read=p=>{try{const v=localStorage.getItem(P+p);return v?JSON.parse(v):null}catch(e){return null}};
+ const keys=c=>{const r=[];try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k.indexOf(P+c+'/')===0)r.push(k.slice(P.length+c.length+1))}}catch(e){}return r};
+ const snap=c=>({docs:keys(c).map(id=>({id:id,data:()=>read(c+'/'+id)}))});
+ const db={doc:p=>({set:async d=>{localStorage.setItem(P+p,JSON.stringify(d));const c=p.split('/')[0];(L[c]||[]).forEach(f=>f(snap(c)))}}),
+  collection:c=>({onSnapshot:(f)=>{(L[c]=L[c]||[]).push(f);setTimeout(()=>f(snap(c)),0)}})};
+ const assets={upload:blob=>new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res({id:'a'+Date.now(),url:r.result});r.onerror=()=>rej(new Error('Could not read file'));r.readAsDataURL(blob)}),delete:async()=>{}};
+ const downloads={save:async o=>{const a=document.createElement('a');a.href=URL.createObjectURL(o.data);a.download=o.filename;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)}};
+ window.claude={use:async n=>n==='db'?db:n==='assets'?assets:n==='downloads'?downloads:null};
+})();
+</script>
+
+<script>
+const ROLES=["Directors","Biology Team","Chemist Team","BD Team","ADME Team"];
+const P=[
+["Venu","Biology Team",null,null,0,null],
+
+
+["Thinakaran","Biology Team",null,null,0,null],
+
+
+
+["Muskaan Sukhani","Biology Team",null,null,0,null],
+["Advaitha","Biology Team",null,null,0,null],["Varsha","Biology Team",null,null,0,null],["Jyoti","Biology Team",null,null,0,null],["Jhanvi","Biology Team",null,null,0,null],
+["Shrey","Chemist Team",null,null,0,null]];
+const TASKS=["Assay validation","Lead optimization synthesis","Partnership term sheet","Portfolio review","Cell-line screening","Compound purification","Licensing outreach","Budget planning"];
+const people=P.map((p,i)=>({id:i,name:p[0],role:p[1],util8:p[2],perf8:p[3],done:p[4],ontime:p[5],
+ tasks:p[2]===null?[]:[0,1,2,3].map(j=>({t:TASKS[(i+j*3)%8],h:4+((i*7+j*5)%13),due:["Today","Tomorrow","Fri","Next week"][j],late:(i+j)%5===0}))}));
+const $=s=>document.querySelector(s);
+const PROJECTS=['AsnRS','Proteosome','Amylin','ACSL5','siRNA'];
+const PM=[[],[],[],[],[],[],[],[]];
+PROJECTS.forEach(n=>$('#proj').insertAdjacentHTML('beforeend','<option>'+n+'</option>'));
+let page=(m=>m&&people[+m[1]]?+m[1]:null)(location.hash.match(/person\/(\d+)/));document.body.classList.toggle('pv',page!==null);
+function crumbs(){const p=people[page];$('#crumbs').innerHTML="<a data-c='all'>All roles</a> › <a data-c='role'>"+esc(p.role)+"</a> › <b>"+esc(p.name)+"</b>"}
+function go(id){if(isMember()&&id!==null){const pp=people.find(x=>x.name===me.n);if(!pp||pp.id!==id)return}vc=null;page=id;if(id!==null)sel=id;try{location.hash=id===null?'':'#/person/'+id}catch(e){}document.body.classList.toggle('pv',page!==null);window.scrollTo(0,0);render()}
+window.addEventListener('hashchange',()=>{const m=location.hash.match(/person\/(\d+)/),id=m&&people[+m[1]]?+m[1]:null;if(id!==page){page=id;document.body.classList.toggle('pv',page!==null);render()}});
+$('#crumbs').onclick=e=>{const a=e.target.closest('[data-c]');if(!a)return;$('#role').value=a.dataset.c==='role'?people[page].role:'';go(null)};
+function T(id){const g=G(id);if(!g.tasks){const off={'Today':0,'Tomorrow':1,'Fri':3,'Next week':7};g.tasks=people[id].tasks.map(t=>({t:t.t,h:t.h,due:fmtD(new Date(Date.now()+(off[t.due]||0)*864e5)),st:t.late?'risk':'track'}))}return g.tasks}
+function tasksHtml(id){const a=T(id);return `<div class='sub' style='margin-bottom:6px'>Add the tasks you are working on now: task, hours, due date and status.</div>${a.map((k,i)=>`<div class='tk' data-i='${i}'><input data-f='t' placeholder='Describe the task' value='${esc(k.t)}'><input type='number' min='0' data-f='h' placeholder='hrs' value='${esc(k.h)}'><input type='date' data-f='due' value='${esc(k.due)}'><select data-f='st'>${[['track','On track'],['risk','At risk'],['done','Done']].map(o=>`<option value='${o[0]}'${k.st===o[0]?' selected':''}>${o[1]}</option>`).join('')}</select><button data-td='1' title='Delete task'>✕</button></div>`).join('')}<button class='btn' data-ta='1'>+ Add task</button>`}
+$('#detail').addEventListener('input',e=>{const t=e.target,r=t.closest('.tk');if(!r||cur===null)return;const f=t.dataset.f;T(cur)[+r.dataset.i][f]=f==='h'?(t.value===''?'':+t.value):t.value});
+$('#detail').addEventListener('change',e=>{if(e.target.closest('.tk')&&cur!==null)persist(cur)});
+$('#detail').addEventListener('click',e=>{const b=e.target.closest('[data-ta],[data-td]');if(!b||cur===null)return;const a=T(cur);
+ if(b.dataset.ta)a.push({t:'',h:'',due:fmtD(new Date()),st:'track'});else a.splice(+b.closest('.tk').dataset.i,1);
+ persist(cur);render(true)});
+function TB(id){const g=G(id);if(!g.tbl)g.tbl={cols:['Task','Notes'],rows:people[id].tasks.map(t=>[t.t,t.h+'h · due '+t.due])};return g.tbl}
+function tblHtml(id){const b=TB(id);
+ return `<div class='sub' style='margin-bottom:6px'>Add rows and columns to list what you are working on. Rename a column by typing in its header.</div><div class='scroll'><table class='tt'><thead><tr>${b.cols.map((c,j)=>`<th><div class='th'><input data-c='${j}' value='${esc(c)}' placeholder='Column name'><button data-dc='${j}' title='Delete column'>✕</button></div></th>`).join('')}<th></th></tr></thead><tbody>${b.rows.map((r,i)=>`<tr data-r='${i}'>${b.cols.map((c,j)=>`<td><input data-j='${j}' value='${esc(r[j]||'')}'></td>`).join('')}<td><button data-dr='${i}' title='Delete row'>✕</button></td></tr>`).join('')}</tbody></table></div><button class='btn' data-ar='1'>+ Add row</button><button class='btn' data-ac='1'>+ Add column</button>`}
+$('#detail').addEventListener('input',e=>{const t=e.target;if(cur===null||!t.closest('.tt'))return;const b=TB(cur);
+ if(t.dataset.j!==undefined)b.rows[+t.closest('tr').dataset.r][+t.dataset.j]=t.value;else if(t.dataset.c!==undefined)b.cols[+t.dataset.c]=t.value});
+$('#detail').addEventListener('change',e=>{if(cur!==null&&e.target.closest('.tt'))persist(cur)});
+$('#detail').addEventListener('click',e=>{const x=e.target.closest('[data-ar],[data-ac],[data-dr],[data-dc]');if(!x||cur===null)return;const b=TB(cur),d=x.dataset;
+ if(d.ar)b.rows.push(b.cols.map(()=>''));
+ else if(d.ac){b.cols.push('New column');b.rows.forEach(r=>r.push(''))}
+ else if(d.dr!==undefined)b.rows.splice(+d.dr,1);
+ else if(d.dc!==undefined){b.cols.splice(+d.dc,1);b.rows.forEach(r=>r.splice(+d.dc,1))}
+ persist(cur);render(true)});
+const APPROVER='Dr. Sukanya Patra';
+function LV(id){const g=G(id);if(!g.leave)g.leave={ent:{annual:'',personal:''},rows:[]};return g.leave}
+function leavePanel(){const el=$('#leave');if(!el||cur===null)return;const L=LV(cur),emp=mode==='employee';
+ const sum=(t,s)=>L.rows.filter(r=>r.type===t&&r.status===s).reduce((a,r)=>a+(+r.days||0),0);
+ const bal=(t,n)=>{const en=num(L.ent[t]),u=sum(t,'approved'),pd=sum(t,'pending');return `<div class='card big'><span class='role'>${n} leave</span><b>${en===null?'–':en-u}</b><span class='role'>${en===null?'Entitlement not set yet':'remaining of '+en+' days'} · ${u} used${pd?' · '+pd+' pending':''}</span>${emp?'':`<div style='margin-top:8px'><label class='role'>Entitlement (days) <input class='n' type='number' min='0' step='0.5' data-ent='${t}' value='${esc(L.ent[t])}' style='width:80px'></label></div>`}</div>`};
+ const stc={pending:'under',approved:'bal',rejected:'over'},stn={pending:'Pending',approved:'Approved',rejected:'Rejected'};
+ const rows=L.rows.map((r,i)=>{const dis=(!emp||r.status!=='pending')?'disabled':'';
+  const mb=emp?'':(r.status==='pending'?`<button data-lact='approved'>Approve</button> <button data-lact='rejected'>Reject</button>`:`<button data-lact='pending'>Reopen</button>`);
+  return `<tr data-i='${i}'><td><input type='date' data-lf='from' value='${esc(r.from)}' ${dis}> → <input type='date' data-lf='to' value='${esc(r.to)}' ${dis}></td><td><select data-lf='type' ${dis}><option value='annual'${r.type==='annual'?' selected':''}>Annual leave</option><option value='personal'${r.type==='personal'?' selected':''}>Personal leave</option></select></td><td><input class='n' type='number' min='0' step='0.5' data-lf='days' value='${esc(r.days)}' ${dis} style='width:70px'></td><td>${r.by?esc(r.by):`<span class='role'>${esc(mgrsOf(people[cur].role).join(' or ')||APPROVER)}</span>`}</td><td><span class='chip ${stc[r.status]}'>${stn[r.status]}</span> ${mb}</td><td>${emp&&r.status==='pending'?`<button data-lact='del' title='Delete request'>✕</button>`:''}</td></tr>`}).join('');
+ el.innerHTML=`<div class='gh'><h2 style='margin:0'>Request for leave – ${esc(people[cur].name)}</h2>${emp?`<button class='btn' style='margin:0' data-lact='add'>+ Request leave</button>`:actorSel(people[cur].role)}</div>
+ <div class='res'>${bal('annual','Annual')}${bal('personal','Personal')}</div>
+ <div class='scroll'><table class='lt'><thead><tr><th>Date of leave (from → to)</th><th>Leave type</th><th>Days</th><th>Approved by</th><th>Status</th><th></th></tr></thead><tbody>${rows||`<tr><td colspan='6' class='empty'>No leave requests yet.${emp?' Click + Request leave to add one.':''}</td></tr>`}</tbody></table></div>
+ <div class='sub' style='margin-top:8px'>Requests are approved by ${mgrsOf(people[cur].role).join(' or ')||APPROVER} (Manager view). Days are counted as calendar days from the dates and can be edited, for example 0.5 for a half day. Only approved leave counts as used.</div>`}
+$('#leave').addEventListener('input',e=>{const t=e.target,f=t.dataset.lf;if(!f||cur===null)return;const tr=t.closest('tr'),r=LV(cur).rows[+tr.dataset.i];r[f]=f==='days'?(t.value===''?'':+t.value):t.value;
+ if((f==='from'||f==='to')&&r.from&&r.to){const d=Math.round((new Date(r.to+'T00:00:00')-new Date(r.from+'T00:00:00'))/864e5)+1;r.days=Math.max(d,1);tr.querySelector('[data-lf=days]').value=r.days}});
+$('#leave').addEventListener('change',e=>{const t=e.target;if(t.dataset.actor){actor=t.value;return}if(cur===null)return;if(t.dataset.ent){LV(cur).ent[t.dataset.ent]=t.value===''?'':+t.value;persist(cur);leavePanel()}else if(t.dataset.lf)persist(cur)});
+$('#leave').addEventListener('click',e=>{const b=e.target.closest('[data-lact]');if(!b||cur===null)return;const L=LV(cur),a=b.dataset.lact;
+ if(a==='add'){const d=fmtD(new Date());L.rows.push({from:d,to:d,type:'annual',days:1,status:'pending'})}
+ else if(a==='del'){L.rows.splice(+b.closest('tr').dataset.i,1)}
+ else{const r=L.rows[+b.closest('tr').dataset.i];r.status=a;r.by=a==='pending'?'':(actor||mgrsOf(people[cur].role)[0]||APPROVER)}
+ persist(cur);leavePanel()});
+const VC={over:'bal',good:'under',low:'over',pend:'na',none:'na'};
+let ay=new Date().getFullYear(),lastL=[];
+function scoresOf(g){let sw=0,sp=0,mw=0,mp=0;g.rows.forEach(r=>{const w=num(r.w)||0,s=num(r.selfR),m=num(r.mgrR);if(s!==null){sw+=w;sp+=w*s}if(m!==null){mw+=w;mp+=w*m}});return{self:sw?sp/sw*10:null,mgr:mw?mp/mw*10:null}}
+function annual(id,y){const g=G(id),out=[];[1,2,3,4].forEach(i=>{const pg=g.periods[mk(y,i)];if(pg&&pg.rows.length){const s=scoresOf(pg);if(s.self!==null||s.mgr!==null)out.push({i,s:s.self,m:s.mgr})}});
+ const av=a=>{const v=a.filter(x=>x!==null);return v.length?v.reduce((x,z)=>x+z,0)/v.length:null};
+ return{per:out,self:av(out.map(o=>o.s)),mgr:av(out.map(o=>o.m)),n:out.length}}
+function verdict(a){if(a.mgr===null)return a.n?['pend','Awaiting manager score']:['none','No ratings yet'];
+ if(a.mgr>=90)return['over','★ Outperformed'];
+ if(a.mgr>=75)return['good','Performed well'];return['low','Needs attention']}
+function annualStrip(id,y){const a=annual(id,y),v=verdict(a),f=x=>x==null?'–':Math.round(x)+'%';
+ const cells=[1,2,3,4].map(i=>{const o=a.per.find(q=>q.i===i);return `<div><span>${pLabel(mk(y,i))}</span>${o?f(o.s)+' self / '+f(o.m)+' mgr':'–'}</div>`}).join('');
+ return `<div class='card' style='margin:10px 0'><div class='gh' style='margin-bottom:6px'><b>Annual summary ${y}</b><span class='chip ${VC[v[0]]}'>${v[1]}</span></div><div class='emp'>${cells}<div><span>Annual self score</span><b>${f(a.self)}</b></div><div><span>Annual manager score</span><b>${f(a.mgr)}</b></div></div></div>`}
+function annualPanel(L){const el=$('#annual');if(!el)return;
+ const rows=L.map(p=>{const a=annual(p.id,ay);return{p,a,v:verdict(a),gap:a.self!=null&&a.mgr!=null?a.mgr-a.self:null}}).sort((x,z)=>(z.a.mgr==null?-1:z.a.mgr)-(x.a.mgr==null?-1:x.a.mgr));
+ const cnt=k=>rows.filter(r=>r.v[0]===k).length,f=x=>x==null?'–':Math.round(x)+'%',top=rows.find(r=>r.a.mgr!=null);
+ el.innerHTML=`<div class='gh'><h2 style='margin:0'>Annual performance review ${ay}</h2><div class='tabs'><button data-ay='-1'>‹</button><b style='padding:6px 4px'>${ay}</b><button data-ay='1'>›</button></div></div>
+ <div class='sub' style='margin-bottom:8px'>Self and manager scores are pulled from each person's rated goals (the four quarters) and averaged. ★ Outperformed = manager score 90% or more. Performed well = 75% to 89%. Needs attention = below 75%.</div>
+ <div class='res' style='margin-top:0'><div class='card big'><span class='role'>★ Outperformed</span><b>${cnt('over')}</b></div><div class='card big'><span class='role'>Performed well</span><b>${cnt('good')}</b></div><div class='card big'><span class='role'>Needs attention</span><b>${cnt('low')}</b></div><div class='card big'><span class='role'>Top performer</span><b style='font-size:20px'>${top?esc(top.p.name):'–'}</b></div></div>
+ <div class='scroll'><table class='lt'><thead><tr><th>#</th><th>Name</th><th>Team</th><th>Self score</th><th>Manager score</th><th>Periods rated</th><th>Result</th></tr></thead><tbody>${rows.map((r,i)=>`<tr><td>${i+1}</td><td><a data-person='${r.p.id}' style='color:var(--ac);cursor:pointer'>${esc(r.p.name)}</a></td><td>${esc(r.p.role)}</td><td>${f(r.a.self)}</td><td><b>${f(r.a.mgr)}</b></td><td>${r.a.n}</td><td><span class='chip ${VC[r.v[0]]}'>${r.v[1]}</span></td></tr>`).join('')||`<tr><td colspan='7' class='empty'>No people match the filters.</td></tr>`}</tbody></table></div>`}
+$('#annual').addEventListener('click',e=>{const a=e.target.closest('[data-ay],[data-person]');if(!a)return;if(a.dataset.person)return go(+a.dataset.person);ay+= +a.dataset.ay;annualPanel(lastL)});
+function bars(vals,labels,max,fmt,color){const W=320,H=140,pb=22,pt=16,bw=36,n=vals.length,gap=(W-n*bw)/(n+1);
+ return `<svg viewBox='0 0 ${W} ${H}' width='100%' role='img'>${vals.map((v,i)=>{const x=gap+i*(bw+gap),h=v==null?0:(H-pb-pt)*Math.min(v,max)/max,y=H-pb-h;return `<rect x='${x}' y='${y}' width='${bw}' height='${h}' rx='4' fill='${color}'/><text x='${x+bw/2}' y='${y-4}' text-anchor='middle' font-size='10' fill='var(--tx)'>${v==null?'–':fmt(v)}</text><text x='${x+bw/2}' y='${H-6}' text-anchor='middle' font-size='10' fill='var(--mu)'>${labels[i]}</text>`}).join('')}<line x1='0' x2='${W}' y1='${H-pb}' y2='${H-pb}' stroke='var(--bd)'/></svg>`}
+function chartsHtml(id){const y=pParts(vcKey()).y,g=G(id),Q=[1,2,3,4].map(i=>g.periods[mk(y,i)]),
+ perf=Q.map(pg=>pg&&pg.rows.length?scoresOf(pg).mgr:null),
+ done=Q.map(pg=>pg&&pg.rows.length?pg.rows.filter(r=>num(r.done)!==null&&num(r.done)>=100).length:null),
+ ann=annual(id,y),dsum=done.reduce((a,v)=>a+(v||0),0),L=['Q1','Q2','Q3','Q4'];
+ return `<div class='stats' style='grid-template-columns:repeat(2,1fr)'><div><b>${ann.mgr==null?'–':Math.round(ann.mgr)+'%'}</b><span>Annual performance ${y}</span></div><div><b>${dsum}</b><span>Tasks done in ${y}</span></div></div>
+ <div class='sub' style='margin-top:10px'>Performance % by quarter (manager score)</div>${bars(perf,L,100,v=>Math.round(v)+'%','var(--ok)')}
+ <div class='sub'>Tasks done by quarter (goals 100% completed)</div>${bars(done,L,Math.max(4,...done.map(v=>v||0)),v=>v,'var(--ac)')}`}
+const ACC=[{u:'d1e64520abec8f7568482eaf5c9e4cdf7d30a4b064cca4ee4046bb6b0e216e30',p:'3b07019a9efa99aff539cf49d380731053c163ae1acfc98721c7e856aa7e940b',r:'manager',n:'Biology 1'},
+{u:'040043df37e830fc8ddda871ce5920346b3da24f330e59087e64a5b93a502657',p:'0de47e557d5ace94230501020c4943cfb1d491dc84ed99489ac02c690eafe62c',r:'manager',n:'Manoj'},
+{u:'93030d4baecfc092a62a79a202cd7f6094a732f712761464739c9dda7d25b771',p:'0de47e557d5ace94230501020c4943cfb1d491dc84ed99489ac02c690eafe62c',r:'manager',n:'Dr. Sukanya Patra'},
+{u:'e4b98496483e31a901c72212d52df8aa3427e61d98c1aa863bebe21322719841',p:'3b07019a9efa99aff539cf49d380731053c163ae1acfc98721c7e856aa7e940b',r:'member',n:'Muskaan Sukhani'},
+{u:'da6a9a8d7bf43a3659a1f0978d4021e4ce10f684572673b2b8cde7f0a2c9d9c6',p:'3b07019a9efa99aff539cf49d380731053c163ae1acfc98721c7e856aa7e940b',r:'member',n:'Venu'},
+{u:'05456bd61ed1a906c6e47bf2dafc1cf0b7324b181ae01398147dcdb0cd52d89b',p:'3b07019a9efa99aff539cf49d380731053c163ae1acfc98721c7e856aa7e940b',r:'member',n:'Thinakaran'},
+{u:'e08dc9bf7ea81820c076029a60df5ab2b8489b6b8d07e3041cb438a1a755a7b2',p:'3b07019a9efa99aff539cf49d380731053c163ae1acfc98721c7e856aa7e940b',r:'member',n:'Advaitha'},
+{u:'2c13e137b657515c8140a4d38a43829fb7a6b9a318f8848caac860cad0299a68',p:'3b07019a9efa99aff539cf49d380731053c163ae1acfc98721c7e856aa7e940b',r:'member',n:'Varsha'},
+{u:'e0c68746e1454cd2278b3892766711a08d962159436842dafd1d75cdc7a69196',p:'3b07019a9efa99aff539cf49d380731053c163ae1acfc98721c7e856aa7e940b',r:'member',n:'Jyoti'},
+{u:'e63911b05f19232ca14d964c17b9c56851e29652d3a3bbf86eb89cdc3b268d02',p:'3b07019a9efa99aff539cf49d380731053c163ae1acfc98721c7e856aa7e940b',r:'member',n:'Jhanvi'},
+{u:'bbb044ec950217289a2ae18381cf6d7e6c4bf3e5576abb619ac71dd68e512305',p:'98758b16493c6c96d3a1014a298dc1de4cac84eb4102ecc6b2bd1262df3e455c',r:'member',n:'Shrey'}];
+const sha=async s=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s)))].map(b=>b.toString(16).padStart(2,'0')).join('');
+let me=null;
+const isMember=()=>!!(me&&me.r==='member');
+function enter(a){me={r:a.r,n:a.n};try{sessionStorage.setItem('tw_user',JSON.stringify(me))}catch(e){}$('#lp').value='';$('#lerr').textContent='';document.body.classList.remove('locked');
+ mode=isMember()?'employee':'manager';if(!isMember()&&allMgrs().includes(me.n))actor=me.n;vc=null;
+ page=null;document.body.classList.remove('pv');
+ $('#logout').textContent='Log out ('+me.n+')';render()}
+function restoreSession(){try{const s=JSON.parse(sessionStorage.getItem('tw_user')||'null');if(s&&s.n){me=s;document.body.classList.remove('locked');mode=isMember()?'employee':'manager';if(!isMember()&&allMgrs().includes(me.n))actor=me.n;$('#logout').textContent='Log out ('+me.n+')'}}catch(e){}}
+async function tryLogin(){const u=$('#lu').value.trim().toLowerCase(),p=$('#lp').value;let a=null;try{const hu=await sha('u:'+u),hp=await sha('p:'+p);a=ACC.find(x=>x.u===hu&&x.p===hp)}catch(e){}
+ if(a)enter(a);else $('#lerr').textContent='Incorrect username or password.'}
+$('#lgo').onclick=tryLogin;['#lu','#lp'].forEach(s=>$(s).addEventListener('keydown',e=>{if(e.key==='Enter')tryLogin()}));
+$('#logout').onclick=()=>{try{sessionStorage.removeItem('tw_user')}catch(e){}me=null;$('#logout').textContent='Log out';document.body.classList.remove('member');document.body.classList.add('locked')};
+function actionsPanel(){const el=$('#actions');if(!el)return;const mgr=mode==='manager';
+ const head=n=>`<div class='gh'><h2 style='margin:0'>Needs your action${n==null?'':' ('+n+')'}</h2><div class='tabs'>${mgr?actorSel(null):''}<button data-m='employee' class='tab${mgr?'':' on'}'>Employee view</button><button data-m='manager' class='tab${mgr?' on':''}'>Manager view</button></div></div>`;
+ if(!mgr){el.innerHTML=head(null)+`<div class='sub' style='margin-top:8px'>Switch to Manager view to see leave requests and goals waiting for your action.</div>`;return}
+ const today=fmtD(new Date()),dd=(a,b)=>Math.round((new Date(b+'T00:00:00')-new Date(a+'T00:00:00'))/864e5),leave=[],rev=[];
+ people.forEach(p=>{LV(p.id).rows.forEach((r,i)=>{if(r.status==='pending')leave.push({p,r,i})});const g=G(p.id);Object.keys(g.periods).forEach(k=>{const pg=g.periods[k];if((pg.status==='goals_review'||pg.status==='eval_review')&&pg.rows.length)rev.push({p,k,n:pg.rows.length,st:pg.status})})});
+ rev.sort((a,b)=>pEnd(a.k)<pEnd(b.k)?-1:1);
+ const nm=p=>`<a data-person='${p.id}' style='color:var(--ac);cursor:pointer'>${esc(p.name)}</a>`;
+ const lt=leave.length?`<div class='scroll'><table class='lt'><thead><tr><th>Employee</th><th>Team</th><th>Date of leave</th><th>Type</th><th>Days</th><th>Decision</th></tr></thead><tbody>${leave.map(x=>`<tr><td>${nm(x.p)}</td><td>${esc(x.p.role)}</td><td>${esc(x.r.from)} → ${esc(x.r.to)}</td><td>${x.r.type==='annual'?'Annual':'Personal'}</td><td>${esc(x.r.days)}</td><td><button data-lid='${x.p.id}' data-li='${x.i}' data-ls='approved'>Approve</button> <button data-lid='${x.p.id}' data-li='${x.i}' data-ls='rejected'>Reject</button></td></tr>`).join('')}</tbody></table></div>`:`<div class='sub'>No leave requests waiting.</div>`;
+ const rt=rev.length?`<div class='scroll'><table class='lt'><thead><tr><th>Employee</th><th>Team</th><th>Period</th><th>Stage</th><th>Goals</th><th>Timing</th><th></th></tr></thead><tbody>${rev.map(x=>{const e0=pEnd(x.k),late=today>e0;return `<tr><td>${nm(x.p)}</td><td>${esc(x.p.role)}</td><td>${pLabel(x.k)} ${pParts(x.k).y}</td><td>${x.st==='goals_review'?'Goal setting':'Self-evaluation and final marks'}</td><td>${x.n}</td><td>${x.st==='goals_review'?`<span class='chip under'>Waiting for review</span>`:late?`<span class='chip over'>Overdue by ${dd(e0,today)} days</span>`:`<span class='chip under'>Period ends ${e0}</span>`}</td><td><button data-gid='${x.p.id}' data-gk='${x.k}'>Review &amp; edit</button></td></tr>`}).join('')}</tbody></table></div>`:`<div class='sub'>Nothing waiting for review.</div>`;
+ el.innerHTML=head(leave.length+rev.length)+`<h3 style='margin:12px 0 6px;font-size:14px'>Leave waiting for approval (${leave.length})</h3>${lt}<h3 style='margin:14px 0 6px;font-size:14px'>Waiting for your review (${rev.length})</h3>${rt}`}
+$('#actions').addEventListener('click',e=>{const t=e.target.closest('[data-m],[data-person],[data-ls],[data-gid]');if(!t)return;
+ if(t.dataset.m){mode=t.dataset.m;return actionsPanel()}
+ if(t.dataset.person)return go(+t.dataset.person);
+ if(t.dataset.gid){mode='manager';go(+t.dataset.gid);vc=t.dataset.gk;goalsPanel();return render(true)}
+ const id=+t.dataset.lid,r=LV(id).rows[+t.dataset.li];r.status=t.dataset.ls;r.by=actor||allMgrs()[0]||APPROVER;persist(id);actionsPanel()});
+$('#actions').addEventListener('change',e=>{if(e.target.dataset.actor)actor=e.target.value});
+const canComp=()=>!!(dbc&&me&&(me.r==='manager'||(people.find(x=>x.name===me.n)||{}).role==='Chemist Team'));
+function saveComp(){const P=PROJECTS[pj];if(dbc){try{Promise.resolve(dbc.doc('projects/'+P).set(JSON.parse(JSON.stringify(store[P]||{})))).catch(()=>{})}catch(e){}}}
+function compHtml(){const P=PROJECTS[pj],rows=((store[P]||{}).compounds)||[],ed=canComp(),del=rows.filter(r=>r.deliveredOn).length,ym=fmtD(new Date()).slice(0,7);
+ const td=(f,r,t)=>`<td><input ${t==='n'?"type='number' min='0' style='width:80px'":t==='d'?"type='date'":"style='min-width:120px;width:100%'"} data-cf='${f}' value='${esc(r[f]||'')}' ${ed?'':'disabled'}></td>`;
+ return `<div class='slot' style='margin-top:12px'><div class='gh' style='margin-bottom:6px'><h3 style='margin:0'>Compounds made and delivered</h3>${ed?`<button class='btn' style='margin:0' data-cadd='1'>+ Add compound</button>`:''}</div><div class='sub' style='margin-bottom:6px'>${rows.length} made \u00b7 ${del} delivered \u00b7 ${rows.filter(r=>(r.madeOn||'').slice(0,7)===ym).length} made this month${ed?'':' \u00b7 only the Chemistry team and managers can edit'}</div><div class='scroll'><table class='lt'><thead><tr><th>Compound ID / name</th><th>Date made</th><th>Quantity (mg)</th><th>Date delivered</th><th>Delivered to</th><th>Made by</th><th></th></tr></thead><tbody>${rows.map((r,i)=>`<tr data-ci='${i}'>${td('name',r)}${td('madeOn',r,'d')}${td('qty',r,'n')}${td('deliveredOn',r,'d')}${td('to',r)}${td('by',r)}<td>${ed?`<button data-cdel='${i}' title='Delete'>\u2715</button>`:''}</td></tr>`).join('')||`<tr><td colspan='7' class='empty'>No compounds logged yet.</td></tr>`}</tbody></table></div></div>`}
+$('#projects').addEventListener('input',e=>{const t=e.target;if(!t.dataset.cf)return;const r=((store[PROJECTS[pj]]||{}).compounds||[])[+t.closest('tr').dataset.ci];if(r)r[t.dataset.cf]=t.value});
+$('#projects').addEventListener('change',e=>{if(e.target.dataset.cf){saveComp();compoundsPanel()}});
+$('#projects').addEventListener('click',e=>{const b=e.target.closest('[data-cadd],[data-cdel]');if(!b||!canComp())return;const P=PROJECTS[pj],s=store[P]||(store[P]={});s.compounds=s.compounds||[];
+ if(b.dataset.cadd)s.compounds.push({name:'',madeOn:fmtD(new Date()),qty:'',deliveredOn:'',to:'',by:isMember()?me.n:''});else s.compounds.splice(+b.dataset.cdel,1);
+ saveComp();projPanel();compoundsPanel()});
+let cy=new Date().getFullYear();
+function compoundsPanel(){const el=$('#compounds');if(!el)return;if(!me||me.r!=='manager'){el.innerHTML='';return}
+ const MN=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+ const cnt=(P,m)=>{const ks=cy+'-'+String(m+1).padStart(2,'0'),a=(((store[P]||{}).compounds)||[]).filter(r=>(r.madeOn||'').slice(0,7)===ks);return{made:a.length,del:a.filter(r=>r.deliveredOn).length}};
+ const cell=c=>c.made?c.made+(c.del?' ('+c.del+')':''):'\u2013';
+ const data=PROJECTS.map(P=>MN.map((_,m)=>cnt(P,m))),sum=a=>a.reduce((x,c)=>({made:x.made+c.made,del:x.del+c.del}),{made:0,del:0});
+ const tr=(name,arr)=>{const t=sum(arr);return `<tr><td><b>${name}</b></td>${arr.map(c=>`<td>${cell(c)}</td>`).join('')}<td><b>${t.made}</b> (${t.del})</td></tr>`};
+ el.innerHTML=`<div class='gh'><h2 style='margin:0'>Compounds made per month \u2013 all projects</h2><div class='tabs'><button data-cy='-1'>\u2039</button><b style='padding:6px 4px'>${cy}</b><button data-cy='1'>\u203a</button></div></div><div class='sub' style='margin:6px 0 8px'>Number of compounds made in each month, with how many of them were delivered in brackets. Entered by the Chemistry team inside each project.</div><div class='scroll'><table class='lt'><thead><tr><th>Project</th>${MN.map(n=>`<th>${n}</th>`).join('')}<th>Year total</th></tr></thead><tbody>${PROJECTS.map((P,i)=>tr(P,data[i])).join('')}${tr('All projects',MN.map((_,m)=>sum(data.map(r=>r[m]))))}</tbody></table></div>`}
+$('#compounds').addEventListener('click',e=>{const b=e.target.closest('[data-cy]');if(b){cy+=+b.dataset.cy;compoundsPanel()}});
+let mode='employee',cur=null,vc=null;
+const CATS=['Project deliverable','Project related work','Operations and Lab maintenance','Developmental goal','Extra'];
+const EMP={};
+const MGRS={'Biology Team':['Manoj','Dr. Sukanya Patra']};let actor='';
+const mgrsOf=r=>MGRS[r]||[];
+const allMgrs=()=>[...new Set(Object.values(MGRS).flat())];
+function actorSel(role){const m=role?mgrsOf(role):allMgrs();if(!m.length)return '';if(!m.includes(actor))actor=m[0];return `<label class='role'>Acting as <select data-actor='1'>${m.map(n=>`<option${n===actor?' selected':''}>${esc(n)}</option>`).join('')}</select></label>`}
+const R=(cat,sub,metric,w,fb,sr)=>({cat,sub,metric,w,selfFb:fb||'',selfR:sr===undefined?'':sr,mgrFb:'',mgrR:''});
+const goals={8:{periods:{'2026-Q3':{status:'submitted',rows:[
+R(CATS[0],'Ensure the flow cytometer is fully operational and develop flow cytometry assays for multiple projects, starting with proteasome inhibitor studies','Prepare work plan and panel design of MOA of proteosome.',25,'FACS is operational (will be completely operational after the changes made by BD person). Established flow cytometry with MM1S, PBMCs and in-vivo experiment with Bortezomib. Optimization is complete and assay is developed.',9.2),
+R(CATS[0],'Initial QC of the fluorescence microscopy and develop IFA','Prepare work plan for projects like KIF18a for tubulin visualization, aggresome in proteosome.',10,'Initial QC of the fluorescence microscopy was completed; IFA was developed for the proteosome project.',10),
+R(CATS[0],'Assist in researching and developing a project plan for the detection and quantification of siRNA','Assist in bioanalytical method development for detection of oligonucleotides (e.g. therapeutic siRNA), for robust analysis',20,'Project plan for initial detection of siRNA is completed.',10),
+R(CATS[1],'Develop a collaborative relation with Navya for in vitro ADME related work in the siRNA program(s)','Improve overall project understanding and cross communication with in-vitro biology',10,'SOP for in-vitro human liver S9 stability assay for olpasiran siRNA is completed and reagents are ordered for urea PAGE for detection of siRNA.',10),
+R(CATS[1],'Deep dive into literature and design relevant flow and microscopy experiments on need basis in multiple ongoing programs','Prepare work plan and panel design',10,'In-vivo flow experiment was started for the proteosome project; work plan optimization is completed.',10),
+R(CATS[2],'Interpersonal skill development','Interpersonal development and skill build up',10,'Formed a collaborative environment with people.',10),
+R(CATS[2],'Interdisciplinary workflow development for holistic contribution in multiple programs','',0),
+R(CATS[2],'Timely updation of lab notebook with compliance','',0),
+R(CATS[3],'Understand the working of ADME and taking part in discussions','Overall understanding of the workflow and process',15,'Ongoing process of understanding each project.',8.7),
+R(CATS[3],'Overall understanding of all ongoing projects','',0),
+R(CATS[3],'Initiate literature search for translational studies (clinical sample analysis in flow based assays) specifically for ongoing programs','',0),
+R(CATS[4],'3D spheroids for AsnRS project, CD1a target evaluation','3D spheroids for AsnRS project, CD1a target evaluation, proposal for dual inhibitors in solid tumors completed',0,'3D spheroids for AsnRS project (ongoing); CD1a target evaluation and proposal for dual inhibitors in solid tumors completed.')]}}}};
+
+[].forEach(a=>{const id=a[0],tw=a[1],sf=a[2],mg=a[3];goals[id]={periods:{}};
+ ['2026-Q1','2026-Q2'].forEach((k,q)=>{goals[id].periods[k]={status:'reviewed',rows:[[CATS[0],'Project milestones for the quarter',.5],[CATS[1],'Supporting experiments and analysis',.3],[CATS[2],'Lab operations and compliance',.2]].map(x=>({cat:x[0],sub:x[1],proj:PROJECTS[PM[id][0]],metric:'As agreed with manager',w:Math.round(tw*x[2]),selfFb:'',selfR:sf[q],mgrFb:'',mgrR:mg[q]}))}})});
+Object.entries({}).forEach(a=>['2026-Q1','2026-Q2'].forEach(k=>goals[a[0]].periods[k].rows.forEach((r,i)=>{r.done=a[1][i]})));
+const fmtD=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const pKey=d=>d.getFullYear()+'-Q'+(Math.floor(d.getMonth()/3)+1);
+const mk=(y,p)=>y+(p===5?'-A':'-Q'+p);
+const isNow=k=>k===curKey()||k===new Date().getFullYear()+'-A';
+const pParts=k=>({y:+k.slice(0,4),p:k.charAt(5)==='A'?5:+k.slice(6)});
+const pLabel=k=>{const o=pParts(k);return o.p===5?'Annual':MON[(o.p-1)*3]+'–'+MON[(o.p-1)*3+2]};
+const pStart=k=>{const o=pParts(k);return fmtD(new Date(o.y,o.p===5?0:(o.p-1)*3,1))};
+const pEnd=k=>{const o=pParts(k);return fmtD(new Date(o.y,o.p===5?12:o.p*3,0))};
+const curKey=()=>pKey(new Date());
+const vcKey=()=>vc||curKey();
+const G=id=>{const g=goals[id]||(goals[id]={});if(!g.periods)g.periods={};
+ Object.values(g.periods).forEach(pg=>{if(pg.status==='submitted')pg.status='eval_review';else if(pg.status==='reviewed')pg.status='final'});
+ Object.keys(g.periods).forEach(k=>{if(/^[0-9]{4}-[1-6]$/.test(k)){const q=Math.floor((+k.slice(5)-1)*2/3)+1,nk=k.slice(0,4)+'-Q'+q,src=g.periods[k];delete g.periods[k];if(!g.periods[nk]||!g.periods[nk].rows.length)g.periods[nk]=src}});
+ if(g.rows){g.periods[pKey(new Date((g.start||fmtD(new Date()))+'T00:00:00'))]={status:g.status||'draft',rows:g.rows};delete g.rows;delete g.status;delete g.start}
+ if(g.history){g.history.forEach(h=>{g.periods[pKey(new Date(h.start+'T00:00:00'))]={status:h.status,rows:h.rows}});delete g.history}
+ return g};
+const inProj=(id,pi)=>(PM[id]||[]).includes(pi)||Object.values(G(id).periods).some(pg=>pg.rows.some(r=>r.proj===PROJECTS[pi]));
+const PG=(id,k)=>{const g=G(id);return g.periods[k]||(g.periods[k]={status:'draft',rows:[]})};
+function activeP(id){const g=G(id),k=Object.keys(g.periods).filter(k=>k<=curKey()&&g.periods[k].rows.length).sort().pop();return k?g.periods[k]:null}
+const num=v=>v===''||v==null||isNaN(+v)?null:+v;
+function calc(id,gg){const g=gg||activeP(id);if(!g||!g.rows.length)return{n:0};let tw=0,wl=0,mp=0,mw=0;
+ g.rows.forEach(r=>{const w=num(r.w)||0,s=num(r.selfR),m=num(r.mgrR);tw+=w;wl+=w*(s===null?10:s)/10;if(m!==null){mp+=w*m/10;mw+=w}});
+ const ds=g.rows.filter(r=>num(r.done)!==null);let dw=0,dp=0;const cv=r=>Math.min(100,Math.max(0,num(r.done)));ds.forEach(r=>{const w=num(r.w)||0;dw+=w;dp+=w*cv(r)});return{n:g.rows.length,tw,wl,perf:mw?mp/mw*100:null,ot:ds.length?(dw?dp/dw:ds.reduce((a,r)=>a+cv(r),0)/ds.length):null}}
+function persist(id){if(dbc&&goals[id]){try{Promise.resolve(dbc.doc('goals/'+id).set(JSON.parse(JSON.stringify(goals[id])))).catch(()=>{})}catch(e){}}}
+function updateCalc(){if(cur===null)return;const g=PG(cur,vcKey()),c=calc(cur,g);const s=(i,t)=>{const x=$(i);if(x)x.textContent=t};
+ g.rows.forEach((r,i)=>{const w=num(r.w)||0,a=num(r.selfR),m=num(r.mgrR);s('#pts'+i,(a===null?'\u2013':(w*a/10).toFixed(1))+' / '+(m===null?'\u2013':(w*m/10).toFixed(1)))});
+ s('#g-tw',(c.tw||0)+(c.tw===100?'':' (aim for 100)'));s('#g-wl',c.n?Math.round(c.wl)+'%':'\u2013');s('#g-pf',c.perf==null?'\u2013':Math.round(c.perf)+'%');
+ const wb=$('#g-wb'),pb=$('#g-pb'),ws=$('#g-ws');if(wb){wb.style.width=Math.min(c.wl||0,130)/1.3+'%';wb.style.background=col(c.wl||0)}
+ if(pb){pb.style.width=Math.min(c.perf||0,100)+'%';pb.style.background='var(--ok)'}
+ s('#g-ot',c.ot==null?'–':Math.round(c.ot)+'%');const ob=$('#g-ob');if(ob){ob.style.width=(c.ot||0)+'%';ob.style.background='var(--ok)'}
+ if(ws){const st=!c.n?'':c.wl>100?'over':c.wl<65?'under':'bal';ws.className='chip '+st;ws.textContent=st?label[st]:''}}
+function goalsPanel(){const el=$('#goals');if(!el)return;const p=people.find(x=>x.id===cur);
+ if(!p){el.innerHTML="<h2>Defining milestones</h2><div class='empty'>Select a person.</div>";return}
+ const k=vcKey(),y=pParts(k).y,now=curKey(),g=PG(p.id,k),e=EMP[p.id]||{id:'–',dept:p.role,role:'\u2013',mgr:mgrsOf(p.role).join(', ')||'\u2013',doj:'\u2013'},emp=mode==='employee',lock=g.status==='final';
+ const st=g.status,tdy=fmtD(new Date()),wkStart=fmtD(new Date(new Date(pEnd(k)+'T00:00:00').getTime()-6*864e5)),inWin=tdy>=wkStart;
+ const canG=emp?(st==='draft'||st==='unlocked'):(st==='goals_review'||st==='unlocked'),canS=emp?((st==='goals_locked'&&inWin)||st==='unlocked'):(st==='eval_review'||st==='unlocked'),canM=!emp&&(st==='eval_review'||st==='unlocked');
+ const eD=canG?'':'disabled',sD=canS?'':'disabled',mD=canM?'':'disabled';
+ const stL={draft:'Draft – goals being set by the team member',goals_review:'Goals submitted – awaiting manager review',goals_locked:'Goals locked – self-evaluation opens near the end of the period',eval_review:'Self-evaluation submitted – awaiting manager review',final:'Final review done – blocked',unlocked:'Unblocked by manager – editable'}[st];
+ const B=(a,t,dis)=>`<button class='btn' data-act='${a}'${dis?' disabled':''}>${t}</button>`,I=t=>`<span class='sub'>${t} </span>`;
+ let act='';
+ if(emp){
+  if(st==='draft')act=B('submitGoals','Submit goals for review',!g.rows.length);
+  else if(st==='goals_review')act=I('Submitted. Waiting for the manager to review your goals.')+B('draft','Withdraw and edit');
+  else if(st==='goals_locked')act=inWin?B('submitEval','Submit self-evaluation'):I('Goals are locked. You can score yourself from '+wkStart+'.');
+  else if(st==='eval_review')act=I('Self-evaluation submitted. Waiting for the manager.');
+  else if(st==='final')act=I('This period is blocked. Only the manager can unblock it.');
+  else if(st==='unlocked')act=B('submitEval','Submit for manager review');
+ }else{
+  if(st==='draft')act=I('Waiting for '+esc(p.name)+' to submit goals.');
+  else if(st==='goals_review')act=B('approveGoals','Submit and lock goals')+B('draft','Return to team member');
+  else if(st==='goals_locked')act=I('Goals are locked for this period.')+B('unblockGoals','Unblock goal setting');
+  else if(st==='eval_review')act=B('finalLock','Submit final review and block')+B('returnEval','Return to team member');
+  else if(st==='final')act=B('unblock','Unblock for me and the team member');
+  else if(st==='unlocked')act=B('finalLock','Submit and block again');
+ }
+ const today=fmtD(new Date()),s0=pStart(k),e0=pEnd(k),dd=(a,b)=>Math.round((new Date(b+'T00:00:00')-new Date(a+'T00:00:00'))/864e5),nw=Math.round((dd(s0,e0)+1)/7),d0=dd(s0,today),ended=today>e0;
+ const wk=(today>=s0&&today<=e0)?'Week '+Math.min(Math.floor(d0/7)+1,nw)+' of '+nw:ended?'Past period':'Starts in '+(-d0)+' days';
+ const warn=ended&&g.rows.length&&g.status!=='final'?`<div class='sub' style='color:var(--er);margin-bottom:8px'>This period has ended \u2013 ${g.status==='eval_review'?'manager review is due.':g.status==='goals_review'?'the manager has not reviewed the goals.':'the final review is not done yet.'}</div>`:'';
+ const tabs=[1,2,3,4,5].map(i=>{const kk=y+(i===5?'-A':'-Q'+i),pg=G(p.id).periods[kk];return `<button class='tab${kk===k?' on':''}' data-p='${kk}' title='${isNow(kk)?'Current period':''}'>${pLabel(kk)}${isNow(kk)?' \u2022':''}${pg&&pg.status==='final'?' \u2713':''}</button>`}).join('');
+ if(pParts(k).p===5){el.innerHTML=`<div class='gh'><h2 style='margin:0'>Defining milestones – ${esc(p.name)}</h2><div class='tabs'><button data-mode='employee' class='tab${emp?' on':''}'>Employee view</button><button data-mode='manager' class='tab${emp?'':' on'}'>Manager view</button></div></div><div class='emp'><div><span>ID</span>${esc(e.id)}</div><div><span>Department</span>${esc(e.dept)}</div><div><span>Role</span>${esc(e.role)}</div><div><span>Manager</span>${esc(e.mgr)}</div><div><span>Date of joining</span>${esc(e.doj)}</div><div><span>Period</span>${s0} → ${e0}</div></div><div class='gh' style='margin:14px 0 8px'><div class='tabs' id='ptabs'>${tabs}</div><div class='tabs'><button data-yr='-1'>‹</button><b style='padding:6px 4px'>${y}</b><button data-yr='1'>›</button></div></div>${annualStrip(p.id,y)}<div class='sub'>The Annual tab has no goals of its own. It shows the self and manager scores pulled from the four quarters of ${y}.</div>`;return}
+let sn=0;const rowOf=(r,i,cc)=>`<tr data-i='${i}'><td>${++sn}</td>${cc}<td><textarea rows='4' data-f='sub' ${eD}>${esc(r.sub)}</textarea></td><td><select data-f='proj' ${eD}><option value=''>–</option>${PROJECTS.map(n=>`<option${r.proj===n?' selected':''}>${n}</option>`).join('')}</select></td><td><textarea rows='4' data-f='metric' ${eD}>${esc(r.metric)}</textarea></td><td><input class='n' type='number' min='0' max='100' data-f='w' value='${esc(r.w)}' ${eD}></td><td><textarea rows='4' data-f='selfFb' ${sD}>${esc(r.selfFb)}</textarea></td><td><input class='n' type='number' min='0' max='10' step='0.1' data-f='selfR' value='${esc(r.selfR)}' ${sD}></td><td><textarea rows='4' data-f='mgrFb' ${mD}>${esc(r.mgrFb)}</textarea></td><td><input class='n' type='number' min='0' max='10' step='0.1' data-f='mgrR' value='${esc(r.mgrR)}' ${mD}></td><td><input class='n' type='number' min='0' max='100' data-f='done' value='${esc(r.done==null?'':r.done)}' ${mD}></td><td>${eD?'':`<button data-act='del' title='Delete row'>\u2715</button>`}</td></tr>`;
+ const catOf=r=>CATS.includes(r.cat)?r.cat:'Extra';
+ const rows=CATS.map(c=>{const idx=g.rows.map((r,i)=>i).filter(i=>catOf(g.rows[i])===c);
+  const cell=`<td rowspan='${Math.max(idx.length,1)}' style='font-weight:600;background:var(--bg)'>${c}${eD?'':`<div><button data-act='add' data-cat='${c}' style='margin-top:6px;font-size:12px'>+ Add row</button></div>`}</td>`;
+  if(!idx.length)return `<tr><td></td>${cell}<td colspan='10' class='empty' style='padding:8px'>No rows yet</td></tr>`;
+  return idx.map((i,n)=>rowOf(g.rows[i],i,n===0?cell:'')).join('')}).join('');
+ el.innerHTML=`<div class='gh'><h2 style='margin:0'>Defining milestones \u2013 ${esc(p.name)}</h2><div class='tabs'><button data-mode='employee' class='tab${emp?' on':''}'>Employee view</button><button data-mode='manager' class='tab${emp?'':' on'}'>Manager view</button></div></div>
+ <div class='emp'><div><span>ID</span>${esc(e.id)}</div><div><span>Department</span>${esc(e.dept)}</div><div><span>Role</span>${esc(e.role)}</div><div><span>Manager</span>${esc(e.mgr)}</div><div><span>Date of joining</span>${esc(e.doj)}</div><div><span>Goal period</span>${s0} \u2192 ${e0}</div></div>
+ <div class='gh' style='margin:14px 0 8px'><div class='tabs' id='ptabs'>${tabs}</div><div class='tabs'><button data-yr='-1'>\u2039</button><b style='padding:6px 4px'>${y}</b><button data-yr='1'>\u203a</button></div></div>
+ <div style='margin:10px 0;display:flex;flex-wrap:wrap;gap:8px;align-items:center'><span class='chip ${lock?'bal':'under'}'>${stL}</span><span class='sub'>${pLabel(k)} ${y} \u00b7 ${k.endsWith('A')?'12 months':'3 months'}</span>${emp?'':`<button class='btn' style='margin:0' data-act='dl'>Download Excel</button>`}</div>${warn}${k.endsWith('A')?annualStrip(p.id,y):''}
+ <div class='scroll'><table class='gt'><thead><tr><th>#</th><th>Goal</th><th>Sub goal</th><th>Project</th><th>Metrics / measure</th><th>Weightage</th><th>Self feedback</th><th>Self rating (0\u201310)</th><th>Manager feedback</th><th>Manager rating (0\u201310)</th><th>Completed (%)</th><th></th></tr></thead><tbody>${rows||`<tr><td colspan='12' class='empty'>No goals for this period yet.${eD?'':' Click + Add goal row to start.'}</td></tr>`}</tbody></table></div>
+ 
+ <div class='actions'>${act}</div>
+ <div class='res'><div class='card big'><span class='role'>On-time delivery (from % completed)</span><b id='g-ot'></b><div class='bar' style='margin-top:8px'><i id='g-ob'></i></div></div><div class='card big'><span class='role'>Performance % (from manager marks)</span><b id='g-pf'></b><div class='bar' style='margin-top:8px'><i id='g-pb'></i></div></div></div>
+ <div class='sub'>Goals are set per quarter (Jan\u2013Mar, Apr\u2013Jun, Jul\u2013Sep, Oct\u2013Dec). The Annual tab shows a summary of the four quarters, with no goals of its own. Each new period starts clean and earlier periods stay saved in their tabs (\u2713 = final review done, \u2022 = current). Steps: the team member adds goals and submits them; the manager reviews, edits if needed, then submits and locks the goals for the period; near the end of the period the team member scores themself and submits; the manager reviews, adds the final marks, submits and blocks the period. Only the manager can unblock it. Performance % = average of the manager ratings, weighted by each goal's weightage. Completed (%) is the share of each goal's work that is done, entered by the manager. On-time delivery = the average of Completed (%) across goals, weighted by weightage. The dashboard uses the latest period with goals. Employee and Manager views are a simple toggle, not a login.</div>`;
+ updateCalc()}
+$('#goals').addEventListener('input',e=>{const t=e.target;if(cur===null||!t.dataset.f)return;const g=PG(cur,vcKey()),i=+t.closest('tr').dataset.i,f=t.dataset.f;
+ g.rows[i][f]=['w','selfR','mgrR','done'].includes(f)?(t.value===''?'':+t.value):t.value;updateCalc();render(true)});
+$('#goals').addEventListener('change',e=>{if(cur!==null&&e.target.dataset.f)persist(cur)});
+$('#goals').addEventListener('click',e=>{const t=e.target.closest('[data-act],[data-mode],[data-p],[data-yr]');if(!t||cur===null)return;
+ if(t.dataset.mode){if(isMember())return;mode=t.dataset.mode;goalsPanel();return leavePanel()}
+ if(t.dataset.p){vc=t.dataset.p;goalsPanel();return render(true)}
+ if(t.dataset.yr){const o=pParts(vcKey());vc=mk(o.y+ +t.dataset.yr,o.p);goalsPanel();return render(true)}
+ const a=t.dataset.act;if(a==='dl')return dl();const g=PG(cur,vcKey());
+ if(a==='add')g.rows.push({cat:t.dataset.cat||'Extra',sub:'',proj:'',metric:'',w:0,selfFb:'',selfR:'',mgrFb:'',mgrR:''});
+ else if(a==='del'){g.rows.splice(+t.closest('tr').dataset.i,1)}
+ else g.status={submitGoals:'goals_review',draft:'draft',approveGoals:'goals_locked',submitEval:'eval_review',finalLock:'final',unblock:'unlocked',unblockGoals:'draft',returnEval:'goals_locked'}[a]||g.status;
+ persist(cur);render()});
+async function dl(){const p=people[cur],k=vcKey(),g=PG(cur,k),e=EMP[cur]||{id:'',dept:p.role,role:'',mgr:mgrsOf(p.role).join(', '),doj:''};
+ if(typeof XLSX==='undefined'){alert('Excel library not loaded');return}
+ const c=calc(cur,g);
+ const aoa=[['Employee Details'],['Name','ID','Department','Role','Manager Name','Date of Joining','Period start','Period end'],[p.name,e.id,e.dept,e.role,e.mgr,e.doj,pStart(k),pEnd(k)],[],['S.No','Goal','Sub Goal','Project','Metrics / Measure','Self feedback','Weightage','Self rating (10 scale)','Self score','Manager feedback / comments','Manager rating (10 scale)','Manager score','Completed (%)']];
+ g.rows.forEach((r,i)=>{const w=num(r.w)||0,a=num(r.selfR),m=num(r.mgrR);aoa.push([i+1,r.cat,r.sub,r.proj||'',r.metric,r.selfFb,w,a===null?'':a,a===null?'':+(w*a/10).toFixed(2),r.mgrFb,m===null?'':m,m===null?'':+(w*m/10).toFixed(2),r.done==null?'':r.done])});
+ aoa.push([],['','','','','','Total weightage',c.tw||0],['','','','','','Performance % (manager marks)',c.perf==null?'':Math.round(c.perf)]);
+ const ws=XLSX.utils.aoa_to_sheet(aoa);ws['!cols']=[{wch:6},{wch:24},{wch:50},{wch:18},{wch:40},{wch:40},{wch:10},{wch:12},{wch:10},{wch:40},{wch:12},{wch:10}];
+ const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Goals');
+ const blob=new Blob([XLSX.write(wb,{type:'array',bookType:'xlsx'})],{type:'application/octet-stream'});
+ try{const d=await claude.use('downloads');if(!d){alert('Downloads are not available in this view.');return}
+  await d.save({filename:'Goals_'+p.name.split(' ').join('_')+'_'+pLabel(k)+'_'+pParts(k).y+'.xlsx',data:blob})}catch(err){if(!err||err.code!=='declined')alert('Could not download the file.')}}
+let pj=0,store={},dbc=null,assetsApi=null;
+const canUp=()=>!!(dbc&&assetsApi);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const msg=t=>{const m=$('#msg');if(m)m.textContent=t};
+function slot(k,title){const d=(store[PROJECTS[pj]]||{})[k];let b;
+ if(!d)b=`<div class='empty'>No ${title.toLowerCase()} uploaded yet.</div>`;
+ else if(d.kind==='image')b=`<img src='${esc(d.url)}' alt='${title}' style='max-width:100%;border-radius:8px'>`;
+ else if(d.kind==='pdf')b=`<a href='${esc(d.url)}' target='_blank' rel='noopener'>Open PDF</a>`;
+ else b=`<div class='scroll'><table class='sm'>${d.rows.map((r,i)=>'<tr>'+r.map(c=>i?'<td>'+esc(c)+'</td>':'<th>'+esc(c)+'</th>').join('')+'</tr>').join('')}</table></div>`;
+ const meta=d?`<div class='role'>${esc(d.name)} · ${new Date(d.at).toLocaleDateString()}</div>`:'';
+ const ctl=canUp()?`<label class='btn'>${d?'Replace':'Upload'} file<input type='file' data-k='${k}' accept='.xlsx,.xls,.csv,.png,.jpg,.jpeg,.gif,.webp,.pdf' hidden></label>${d?`<button class='btn' data-rm='${k}'>Remove</button>`:''}`:'';
+ return `<div class='slot'><h3>${title}</h3>${meta}${b}${ctl}</div>`}
+function projPanel(){const el=$('#projects');if(!el)return;const pv=$('#proj').value;if(!pv){el.innerHTML="<h2>Project timeline &amp; budget</h2><div class='empty'>Select a project in the Project filter above to see its Timeline and Budget.</div>";return}pj=PROJECTS.indexOf(pv);
+ const team=people.filter(p=>inProj(p.id,pj)).map(p=>`<a data-person='${p.id}' style='color:var(--ac);cursor:pointer'>${esc(p.name)}</a>`).join(', ')||'No one yet – add this project to a goal to join the team';
+ el.innerHTML=`<h2>${PROJECTS[pj]} – Timeline, Budget &amp; Compounds</h2><div class='sub' style='margin:8px 0 12px'>Team: ${team}</div><div class='slots'>${slot('timeline','Timeline')}${slot('budget','Budget')}</div>${compHtml()}<div class='sub' id='msg' style='margin-top:10px'>${canUp()?'Upload Excel, CSV, image or PDF. Excel sheets are saved as CSV and shown as a table.':'Only editors of this page can upload or replace files.'}</div>`}
+async function up(k,file){const P=PROJECTS[pj];msg('Uploading…');
+ try{let blob=file,kind,rows=null;const ext=file.name.split('.').pop().toLowerCase();
+  if(['xlsx','xls','csv'].includes(ext)){if(typeof XLSX==='undefined')throw new Error('Excel reader not loaded');
+   const ws=(w=>w.Sheets[w.SheetNames[0]])(XLSX.read(await file.arrayBuffer(),{type:'array'}));
+   blob=new Blob([XLSX.utils.sheet_to_csv(ws)],{type:'text/csv'});kind='sheet';
+   rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''}).slice(0,40).map(r=>r.slice(0,12).map(String));}
+  else kind=ext==='pdf'?'pdf':'image';
+  const a=await assetsApi.upload(blob);
+  await dbc.doc('projects/'+P).set({...(store[P]||{}),[k]:{id:a.id,url:a.url,name:file.name,kind,rows,at:Date.now()}});
+ }catch(e){msg('Upload failed: '+(e.message||e.code||'unknown error'))}}
+async function rm(k){const P=PROJECTS[pj],d=(store[P]||{})[k];if(!d)return;
+ try{await dbc.doc('projects/'+P).set({...store[P],[k]:null});try{await assetsApi.delete(d.id)}catch(e){}}catch(e){msg('Remove failed')}}
+$('#projects').onclick=e=>{const pa=e.target.closest('[data-person]');if(pa)return go(+pa.dataset.person);const t=e.target.closest('[data-p],[data-rm]');if(!t)return;if(t.dataset.p!==undefined){pj=+t.dataset.p;$('#proj').value=PROJECTS[pj];render()}else rm(t.dataset.rm)};
+$('#projects').onchange=e=>{const i=e.target;if(i.type==='file'&&i.files[0])up(i.dataset.k,i.files[0])};
+(async()=>{try{if(typeof claude==='undefined')return;dbc=await claude.use('db');assetsApi=await claude.use('assets');if(!dbc)return;
+ dbc.collection('goals').onSnapshot(s=>{s.docs.forEach(d=>{goals[d.id]=JSON.parse(JSON.stringify(d.data()))});const a=document.activeElement;render(!!(a&&a.closest&&a.closest('#goals,#leave,#detail')))},()=>{});
+ dbc.collection('projects').onSnapshot(s=>{store={};s.docs.forEach(d=>store[d.id]=JSON.parse(JSON.stringify(d.data())));const a=document.activeElement;if(!(a&&a.closest&&a.closest('#projects')))projPanel();compoundsPanel()},()=>{});projPanel()}catch(e){}})();
+const avg=a=>a.reduce((x,y)=>x+y,0)/a.length;
+let sort={k:"name",d:1},sel=0;
+ROLES.forEach(r=>$("#role").insertAdjacentHTML("beforeend",`<option>${r}</option>`));
+function view(p){const n=4,gs0=calc(p.id);if(!p.util8)return viewBlank(p,gs0);const u=p.util8.slice(-n),f=p.perf8.slice(-n);
+ let util=Math.round(avg(u)),perf=Math.round(avg(f));const gs=calc(p.id);if(gs.n){util=Math.round(gs.wl);if(gs.perf!==null)perf=Math.round(gs.perf)}
+ return{...p,util,perf,status:util>100?"over":util<65?"under":"bal",ontime:Math.round(gs.ot!=null?gs.ot:p.ontime),hrs:Math.round(40*util/100)}}
+const label={over:"Overloaded",bal:"Balanced",under:"Spare capacity",none:"–"};
+function viewBlank(p,gs){const util=gs.n?Math.round(gs.wl):null,perf=gs.perf!=null?Math.round(gs.perf):null,ot=gs.ot!=null?Math.round(gs.ot):null;return{...p,util,perf,ontime:ot,status:util==null?'none':util>100?'over':util<65?'under':'bal',hrs:util==null?0:Math.round(40*util/100)}}
+const col=u=>u>100?"var(--er)":u<65?"var(--ac)":"var(--ok)";
+function render(noG){const th=$('#tmhint');if(th)th.textContent=isMember()?'· click your own name to open your page':'· click a person to open their page';if(isMember()){const pp=people.find(x=>x.name===me.n);if(page!==null&&(!pp||page!==pp.id))page=null;document.body.classList.add('member');document.body.classList.toggle('pv',page!==null)}else document.body.classList.remove('member');
+ const q=$("#q").value.toLowerCase(),r=$("#role").value;
+ let L=people.map(view).filter(p=>p.name.toLowerCase().includes(q)&&(!r||p.role===r)&&(!$('#proj').value||inProj(p.id,PROJECTS.indexOf($('#proj').value))));
+ L.sort((a,b)=>{const x=a[sort.k],y=b[sort.k];return(x>y?1:x<y?-1:0)*sort.d});
+ $("#kpis").innerHTML=[["Avg performance",(v=>v.length?Math.round(avg(v)):"–")(L.map(p=>p.perf).filter(x=>x!=null))],["On-time delivery",(v=>v.length?Math.round(avg(v))+"%":"–")(L.map(p=>p.ontime).filter(x=>x!=null))]]
+  .map(k=>`<div class="card kpi"><div class="l">${k[0]}</div><div class="v">${k[1]}</div></div>`).join("");
+ $("#none").hidden=L.length>0;
+ $("#rows").innerHTML=L.map(p=>`<tr data-id="${p.id}" class="${p.id===sel?"sel":""}"><td><div class="name">${p.name}${isMember()&&p.name===me.n?' (you)':''}</div><div class="role">${p.role}</div></td>
+ ${isMember()&&p.name!==me.n?`<td colspan="2" class="role">Private</td>`:`<td><b>${p.perf==null?'–':p.perf}</b></td><td>${p.ontime==null?'–':p.ontime+'%'}</td>`}</tr>`).join("");
+ lastL=L;if(isMember()){$('#kpis').innerHTML='';$('#annual').innerHTML='';$('#actions').innerHTML='';$('#compounds').innerHTML=''}else if(page===null){annualPanel(L);actionsPanel();compoundsPanel()}const cp=page!==null?view(people[page]):(L.find(p=>p.id===sel)||L[0]);cur=page!==null?page:(cp?cp.id:null);detail(isMember()&&page===null?null:cp);projPanel();if(page!==null){crumbs();if(!noG){goalsPanel();leavePanel()}}
+}
+function line(d,c,min,max,W,H){const pts=d.map((v,i)=>[10+i*(W-20)/(d.length-1),H-8-(v-min)/(max-min)*(H-16)]);
+ return`<polyline fill="none" stroke="${c}" stroke-width="2.5" stroke-linejoin="round" points="${pts.map(p=>p.join(",")).join(" ")}"/>`+pts.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="${c}"/>`).join("")}
+function detail(p){const el=$("#detail");
+ if(!p){el.innerHTML='<div class="empty">Select a person</div>';return}
+ 
+ el.innerHTML=`<h2>${p.name} <span class="role">· ${p.role}</span></h2>${chartsHtml(p.id)}
+ <h2 style="margin-top:12px">Current tasks</h2>${tblHtml(p.id)}
+ `}
+$("#rows").onclick=e=>{const t=e.target.closest("tr");if(t)go(+t.dataset.id)};
+document.querySelectorAll("th").forEach(h=>h.onclick=()=>{const k=h.dataset.k;if(isMember()&&k!=='name')return;sort=sort.k===k?{k,d:-sort.d}:{k,d:k==="name"?1:-1};render()});
+["#q","#role","#proj"].forEach(s=>$(s).oninput=()=>{if(s==='#proj'&&$(s).value)pj=PROJECTS.indexOf($(s).value);render()});restoreSession();
+render();
+</script></body></html>
